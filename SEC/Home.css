@@ -355,16 +355,37 @@
 }
 
 .form-control {
+    border: 1px solid #e5eaf4;
+    border-radius: 8px;
+    padding: 8px 12px;
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    margin-bottom: 8px;
 }
 
 .form-control:focus {
-    border-color: #80bdff;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    outline: none;
+    border-color: #d0b200;
+    box-shadow: 0 0 0 2px rgba(208, 178, 0, 0.2);
+}
+
+/* Mobile number input specific styles */
+input[type="tel"] {
+    letter-spacing: 1px;
+    font-family: monospace;
+}
+
+input[type="tel"]:not(:placeholder-shown):invalid {
+    border-color: #dc3545;
+}
+
+input[type="tel"]:not(:placeholder-shown):valid {
+    border-color: #28a745;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
 }
 
 .btn-primary {
