@@ -7,6 +7,12 @@ const menuItems = {
     'soft-drink': { name: 'Soft Drink', price: 89 }
 };
 
+// Mobile number validation
+function validateMobileNumber(mobileNumber) {
+    const mobileRegex = /^[0-9]{10}$/;
+    return mobileRegex.test(mobileNumber);
+}
+
 // Function to update quantity and total
 function updateQuantity(itemId, change) {
     const qtyInput = document.getElementById(`${itemId}-qty`);
@@ -82,9 +88,13 @@ async function processOrder() {
     }
 }
 
-async function getOrderHistory() {
+async function getOrderHistory(mobileNumber = null) {
     try {
-        const response = await fetch('/api/order_history');
+        let url = '/api/order_history';
+        if (mobileNumber) {
+            url += `?mobile_number=${mobileNumber}`;
+        }
+        const response = await fetch(url);
         const data = await response.json();
         return data;
     } catch (error) {
@@ -124,6 +134,7 @@ function updateOrderHistory(orders) {
         <div class="order-card">
             <h3>Order #${order.order_id}</h3>
             <p>Customer: ${order.customer_name}</p>
+            <p>Mobile: ${order.mobile_number}</p>
             <p>Table: ${order.table_number || 'N/A'}</p>
             <p>Total: ₹${order.total_amount}</p>
             <div class="order-items">
@@ -160,6 +171,7 @@ function updatePendingOrders(orders) {
         <div class="order-card pending">
             <h3>Order #${order.order_id}</h3>
             <p>Customer: ${order.customer_name}</p>
+            <p>Mobile: ${order.mobile_number}</p>
             <p>Table: ${order.table_number || 'N/A'}</p>
             <p>Total: ₹${order.total_amount}</p>
             <button onclick="handleProcessOrder()" class="process-btn">Process Order</button>
@@ -171,13 +183,11 @@ function updatePendingOrders(orders) {
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize data
     try {
-        const [history, records, pending] = await Promise.all([
-            getOrderHistory(),
+        const [records, pending] = await Promise.all([
             getCustomerRecords(),
             getPendingOrders()
         ]);
         
-        updateOrderHistory(history);
         updateCustomerRecords(records);
         updatePendingOrders(pending);
     } catch (error) {
@@ -193,6 +203,7 @@ if (orderForm) {
         
         const customerName = document.getElementById('customer_name').value;
         const tableNumber = document.getElementById('table_number').value;
+        const mobileNumber = document.getElementById('mobile_number').value;
         const items = JSON.parse(document.getElementById('items').value);
         const totalAmount = parseFloat(document.getElementById('total_amount').value);
         
@@ -205,10 +216,16 @@ if (orderForm) {
             alert('Please select a table number');
             return;
         }
+
+        if (!validateMobileNumber(mobileNumber)) {
+            alert('Please enter a valid 10-digit mobile number');
+            return;
+        }
         
         const orderData = {
             customer_name: customerName,
             table_number: tableNumber,
+            mobile_number: mobileNumber,
             items: items,
             total_amount: totalAmount
         };
@@ -219,9 +236,9 @@ if (orderForm) {
             // Show success message
             alert(`Order #${result.order_id} placed successfully!`);
             
-            // Refresh data
+            // Refresh data and show order history for this mobile number
             const [history, records, pending] = await Promise.all([
-                getOrderHistory(),
+                getOrderHistory(mobileNumber),
                 getCustomerRecords(),
                 getPendingOrders()
             ]);
@@ -267,9 +284,12 @@ async function handleProcessOrder() {
     try {
         const result = await processOrder();
         
+        // Get the mobile number from the processed order
+        const mobileNumber = result.order.mobile_number;
+        
         // Refresh all data after processing
         const [history, records, pending] = await Promise.all([
-            getOrderHistory(),
+            getOrderHistory(mobileNumber),
             getCustomerRecords(),
             getPendingOrders()
         ]);
