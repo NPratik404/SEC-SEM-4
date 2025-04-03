@@ -304,4 +304,130 @@ async function handleProcessOrder() {
         console.error('Error processing order:', error);
         alert('Error processing order. Please try again.');
     }
-} 
+}
+
+// Manager's View Functions
+function refreshManagerView() {
+    // Show loading state
+    document.getElementById('todaysOrders').innerHTML = '<p class="text-center">Loading...</p>';
+    document.getElementById('customerRecords').innerHTML = '<p class="text-center">Loading...</p>';
+
+    // Fetch both today's orders and customer records
+    Promise.all([
+        fetch('/api/todays_orders').then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        }),
+        fetch('/api/customer_records').then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+    ])
+    .then(([orders, customers]) => {
+        if (!Array.isArray(orders) || !Array.isArray(customers)) {
+            throw new Error('Invalid data received');
+        }
+        console.log('Received orders:', orders);
+        console.log('Received customers:', customers);
+        displayTodaysOrders(orders);
+        displayCustomerRecords(customers);
+        updateManagerStats(orders, customers);
+    })
+    .catch(error => {
+        console.error('Error refreshing manager view:', error);
+        document.getElementById('todaysOrders').innerHTML = 
+            '<p class="text-danger text-center">Error loading data. Please try again.</p>';
+        document.getElementById('customerRecords').innerHTML = 
+            '<p class="text-danger text-center">Error loading data. Please try again.</p>';
+    });
+}
+
+function displayTodaysOrders(orders) {
+    const todaysOrdersContainer = document.getElementById('todaysOrders');
+    todaysOrdersContainer.innerHTML = '';
+
+    if (!orders || orders.length === 0) {
+        todaysOrdersContainer.innerHTML = '<p class="text-muted text-center">No orders for today yet.</p>';
+        return;
+    }
+
+    orders.forEach(order => {
+        const orderElement = document.createElement('div');
+        orderElement.className = 'order-item';
+        orderElement.innerHTML = `
+            <div class="order-header">
+                <span class="order-id">Order #${order.order_id}</span>
+            </div>
+            <div class="order-details">
+                <p><strong>Customer:</strong> ${order.customer_name}</p>
+                <p><strong>Table:</strong> ${order.table_number}</p>
+                <p><strong>Items:</strong> ${order.items.length}</p>
+                <p><strong>Total:</strong> ₹${order.total_amount.toFixed(2)}</p>
+            </div>
+        `;
+        todaysOrdersContainer.appendChild(orderElement);
+    });
+}
+
+function displayCustomerRecords(customers) {
+    const customerRecordsContainer = document.getElementById('customerRecords');
+    customerRecordsContainer.innerHTML = '';
+
+    if (!customers || customers.length === 0) {
+        customerRecordsContainer.innerHTML = '<p class="text-muted text-center">No customer records yet.</p>';
+        return;
+    }
+
+    customers.forEach(customer => {
+        const customerElement = document.createElement('div');
+        customerElement.className = 'customer-item';
+        customerElement.innerHTML = `
+            <div class="customer-header">
+                <span class="customer-name">${customer.customer_name}</span>
+            </div>
+            <div class="customer-details">
+                <p><strong>Total Orders:</strong> ${customer.total_orders}</p>
+                <p><strong>Total Spent:</strong> ₹${customer.total_spent.toFixed(2)}</p>
+                <p><strong>Average Order:</strong> ₹${(customer.total_spent / customer.total_orders).toFixed(2)}</p>
+            </div>
+        `;
+        customerRecordsContainer.appendChild(customerElement);
+    });
+}
+
+function updateManagerStats(orders, customers) {
+    try {
+        // Calculate totals
+        const totalOrders = orders.length;
+        const totalRevenue = orders.reduce((sum, order) => {
+            const amount = parseFloat(order.total_amount);
+            return sum + (isNaN(amount) ? 0 : amount);
+        }, 0);
+        const totalCustomers = customers.length;
+
+        // Update the display
+        const totalOrdersElement = document.getElementById('totalOrdersToday');
+        const totalRevenueElement = document.getElementById('totalRevenueToday');
+        const totalCustomersElement = document.getElementById('totalCustomers');
+
+        if (totalOrdersElement) totalOrdersElement.textContent = totalOrders;
+        if (totalRevenueElement) totalRevenueElement.textContent = `₹${totalRevenue.toFixed(2)}`;
+        if (totalCustomersElement) totalCustomersElement.textContent = totalCustomers;
+
+        console.log('Stats updated:', { totalOrders, totalRevenue, totalCustomers });
+    } catch (error) {
+        console.error('Error updating manager stats:', error);
+    }
+}
+
+// Auto-refresh manager view every 30 seconds
+let refreshInterval = setInterval(refreshManagerView, 30000);
+
+// Initial load of manager view
+document.addEventListener('DOMContentLoaded', () => {
+    refreshManagerView();
+}); 
