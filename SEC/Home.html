@@ -383,13 +383,44 @@
                     </div>
                 </div>
 
-                <!-- Customer Records -->
+                <!-- Manager's View -->
                 <div class="col-12 mt-4">
                     <div class="card">
                         <div class="card-body">
-                            <h3 class="card-title">Customer Records</h3>
-                            <div id="customerRecords" class="customer-list">
-                                <!-- Customer records will be displayed here -->
+                            <h3 class="card-title">Manager's View</h3>
+                            <div class="manager-controls mb-3">
+                                <button class="btn btn-primary" onclick="refreshManagerView()">
+                                    <i class="fas fa-sync-alt"></i> Refresh All Data
+                                </button>
+                                <div class="stats-display mt-3">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Orders Today:</span>
+                                        <span id="totalOrdersToday" class="stat-value">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Revenue Today:</span>
+                                        <span id="totalRevenueToday" class="stat-value">₹0.00</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Customers:</span>
+                                        <span id="totalCustomers" class="stat-value">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4 class="section-subtitle">Today's Orders</h4>
+                                    <div id="todaysOrders" class="order-list">
+                                        <!-- Today's orders will be displayed here -->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4 class="section-subtitle">Customer Records</h4>
+                                    <div id="customerRecords" class="customer-list">
+                                        <!-- Customer records will be displayed here -->
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
