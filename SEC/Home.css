@@ -496,3 +496,122 @@ input[type="tel"]:not(:placeholder-shown):valid {
     color: #28a745;
     margin-bottom: 1rem;
 }
+
+/* Manager's View Styles */
+.manager-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.section-subtitle {
+    color: #495057;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.stats-display {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #28a745;
+}
+
+#todaysOrders, #customerRecords {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+}
+
+.order-item, .customer-item {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+.order-item:hover, .customer-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.order-header, .customer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.order-id, .customer-name {
+    font-weight: bold;
+    color: #007bff;
+    font-size: 1.1rem;
+}
+
+.order-time {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.order-details, .customer-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.order-details p, .customer-details p {
+    margin: 0;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+    .stats-display {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .order-details, .customer-details {
+        grid-template-columns: 1fr;
+    }
+    
+    #todaysOrders, #customerRecords {
+        margin-bottom: 1rem;
+    }
+}
